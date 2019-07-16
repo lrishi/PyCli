@@ -1,5 +1,5 @@
 import tty, sys, termios
-from PyCli.lib.getchar import GetChar as IGetChar
+from PyCli.api.getchar import GetChar as IGetChar
 
 
 class GetCharLinux(IGetChar, object):

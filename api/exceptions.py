@@ -44,8 +44,8 @@ class PyCliValueError(Exception):
 
 class PyCliUnsupportedOS(Exception):
     def __init__(self, arg):
-        super.__init__(
-            "Unsupported operating system: %s" % (
+        super().__init__(
+            "Unsupported operating system => [%s]" % (
                 str(arg)
             )
         )
