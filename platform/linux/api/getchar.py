@@ -1,15 +1,14 @@
 import tty, sys, termios
-from PyCli.lib.getchar import GetChar as IGetChar
-
+from PyCli.api.getchar import GetChar as IGetChar
+from PyCli.api.log import Log
 
 class GetCharLinux(IGetChar, object):
-    def __init__(self):
-        pass
 
     def __str__(self):
         return str(super()) + "=>" + self.__name__
 
     def stdin(self, count=1):
+        Log.d("Platform is Linux")
         fdesc = sys.stdin.fileno()
         presets = termios.tcgetattr(fdesc)
         retchr = ""

@@ -1,29 +1,48 @@
-from PyCli.lib.abstract import AbstractOS
-from PyCli.lib.decorators import virtualmethod
-from PyCli.lib.exceptions import 
+from PyCli.api.abstract import AbstractOS
+from PyCli.api.decorators import virtualmethod
+from PyCli.api.exceptions import PyCliUnsupportedOS
+from PyCli.api.log import Log
 
 class GetChar(object):
     """Gets a single character from standard input.  Does not echo to the
 screen."""
 
     def __new__(cls, *args, **kwargs):
+        
         if AbstractOS.is_windows():
-            from PyCli.platform.win32.lib.getchar import GetCharWindows
-            return object.__new__(GetCharWindows, *args, **kwargs)
-        if AbstractOS.is_linux():
-            from PyCli.platform.linux.lib.getchar import GetCharLinux
-            return object.__new__(GetCharLinux, *args, **kwargs)
-        if AbstractOS.is_macos():
-            from PyCli.platform.macos.lib.getchar import GetCharMacOS
-            return object.__new__(GetCharMacOS, *args, **kwargs)
-        raise PyCliUnsupportedOS(AbstractOS.get_os_name())
+            Log.d("Operating system is Windows")
+            from PyCli.platform.win32.api.getchar import GetCharWindows as GetCharPlatform
+        elif AbstractOS.is_linux():
+            Log.d("Operating system is Linux")
+            from PyCli.platform.linux.api.getchar import GetCharLinux as GetCharPlatform
+        elif AbstractOS.is_macos():
+            Log.d("Operating system is MacOS")
+            from PyCli.platform.macos.api.getchar import GetCharMacOS as GetCharPlatform
+        else:
+            Log.d("Operating system is %s" % AbstractOS.get_os_name())
+        
+        try:
+            return object.__new__(GetCharPlatform, *args, **kwargs)
+        except UnboundLocalError:
+            raise PyCliUnsupportedOS(AbstractOS.get_os_name())
+
 
     @virtualmethod
     def stdin(self, count=1):
         pass
 
-"""
-catch = GetChar()
 
-print(catch.stdin())
-"""
+def getchar_utest():
+    gc = GetChar()
+    print("Type q to exit, or anything else for no-op:")
+    while True:
+        c = gc.stdin()
+        print(c)
+        if c is 'q':
+            print("\nExiting!")
+            break
+
+
+if __name__ == "__main__":
+    Log.i("Starting up...")
+    getchar_utest()

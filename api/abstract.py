@@ -50,9 +50,9 @@ class AbstractOS(object):
         return AbstractOS.__is_macos
         
     @staticmethod
-    def get_os_name()
+    def get_os_name():
         """
         "" Return current os name
         ""
         """
-        return (platform if platform is not "" else "Unknown")
+        return (str(platform) if platform is not "" else "Unknown")
