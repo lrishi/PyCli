@@ -8,7 +8,7 @@ class GetChar(object):
 screen."""
 
     def __new__(cls, *args, **kwargs):
-        
+
         if AbstractOS.is_windows():
             Log.d("Operating system is Windows")
             from PyCli.platform.win32.api.getchar import GetCharWindows as GetCharPlatform
@@ -20,7 +20,7 @@ screen."""
             from PyCli.platform.macos.api.getchar import GetCharMacOS as GetCharPlatform
         else:
             Log.d("Operating system is %s" % AbstractOS.get_os_name())
-        
+
         try:
             return object.__new__(GetCharPlatform, *args, **kwargs)
         except UnboundLocalError:
