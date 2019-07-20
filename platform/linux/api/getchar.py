@@ -8,7 +8,6 @@ class GetCharLinux(IGetChar, object):
         return str(super()) + "=>" + self.__name__
 
     def stdin(self, count=1):
-        Log.d("Platform is Linux")
         fdesc = sys.stdin.fileno()
         presets = termios.tcgetattr(fdesc)
         retchr = ""

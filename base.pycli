@@ -1,0 +1,39 @@
+
+[
+    {   
+        "name": "show",
+        "help": "Show commands",
+        "link": [''],
+        "type": "pycli_internal"
+    },
+    
+    {   
+        "name": "debug",
+        "help": "Enable debugs",
+        "link": [''],
+        "type": "pycli_internal"
+    },
+    
+    {   
+        "name": "no",
+        "help": "Negate a command",
+        "link": [''],
+        "type": "pycli_internal",
+        "capture": ['debug']
+    },
+    
+    {
+        "name": "history",
+        "help": "List history of executed commands",
+        "link": ['show'],
+        "type": "pycli_internal",
+        "execute": "pycli_show_history"
+    },
+    {   
+        "name": "keystrokes",
+        "help": "Debug keystrokes",
+        "link": ['debug'],
+        "type": "pycli_internal",
+        "execute": "pycli_debug_keystrokes"
+    }
+]

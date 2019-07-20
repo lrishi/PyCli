@@ -1,10 +1,10 @@
-from PyCLI.exceptions import *
-from PyCLI.utils.getchar import GetChar
+from PyCli.api.exceptions import *
+from PyCli.api.getchar import GetChar
 
-class PyCliTree:
+class PyCliTree(object):
     pass
 
-class PyCliShell:
+class PyCliShell(object):
     __cli_tree = None
     __prompt = "Prompt"
     __prompt_terminator = "#"
@@ -89,10 +89,11 @@ class PyCliShell:
 
     def attach(self):
         curr_cli = ""
+        term = GetChar()
         while True:
             PyCliShell.print_realtime("\n%s" % (self.get_prompt_string()), curr_cli)
             while True:
-                uchar = GetChar.stdin()
+                uchar = term.stdin()
                 if uchar is '?':
                     PyCliShell.print_realtime(uchar)
                     break
@@ -123,8 +124,8 @@ class PyCliShell:
                     curr_cli = curr_cli[:-1]
                     continue
                 if uchar is '\x1b':
-                    uchar = GetChar.stdin()
-                    uchar = GetChar.stdin()
+                    uchar = term.stdin()
+                    uchar = term.stdin()
                     if uchar is 'A':
                         if self._up_count < len(self.cli_history):
                             curr_cli = self.cli_history[self._up_count]
@@ -141,5 +142,10 @@ class PyCliShell:
                 self._up_count = 0
 
 
-a = PyCliShell(PyCliTree())
-a.attach()
+def pyclishell_ut():
+    shell = PyCliShell(PyCliTree())
+    shell.attach()
+
+
+if __name__ == "__main__":
+    pyclishell_ut()

@@ -4,7 +4,7 @@ from enum import Enum
 from datetime import datetime
 
 
-class Log:
+class Log(object):
 
     __instance = None
     __logger = logging.getLogger("PyCli.%s"%datetime.now())
