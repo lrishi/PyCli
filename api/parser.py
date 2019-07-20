@@ -1,50 +1,13 @@
 import os
 
-from PyCli.api.tree import PyCliNode
-
-class PyCliNodeBuilder(object):
-    
-    mandatory = {
-        "name": None,
-        "help": None,
-        "link": None,
-    }
-    
-    optional = {
-        "type": None,
-        "capture": None,
-        "execute": None
-    }
-    
-    def _get(self):
-        return PyCliNode(  
-                    link=self.mandatory["link"],
-                    name=self.mandatory["name"],
-                    help=self.mandatory["help"],
-                    type=self.optional["type"],
-                    capture=self.optional["capture"],
-                    execute=self.optional["execute"]
-                )
-    
-    @staticmethod
-    def get(dictionary):
-        # Parse mandatory args
-        pcnb = PyCliNodeBuilder()
-        for key in pcnb.mandatory.keys():
-            pcnb.mandatory[key] = dictionary[key]
-        
-        for key in pcnb.optional.keys():
-            if key in dictionary:
-                pcnb.optional[key] = dictionary[key]
-        
-        return pcnb._get()
-        
+from PyCli.api.node import PyCliNodeBuilder
         
 
 class PyCliParser(object):
     
     __extensions = (".pycli")
     __search_path = "."
+    __nodes = []
     __tree = []
     
     def __init__(self, search_path):
@@ -59,7 +22,9 @@ class PyCliParser(object):
     def parse(self, files):
         for fn in files:
             self._parse(fn)
-        return self.__tree
+        for t in self.__tree:
+            self.__nodes += list(map(PyCliNodeBuilder.get, t))
+        return self.__nodes
         
     def find(self):
         file_names = [fn for fn in os.listdir(self.__search_path) if fn.endswith(self.__extensions)]
@@ -74,5 +39,3 @@ if __name__ == "__main__":
         for m in d:
             node = PyCliNodeBuilder.get(m)
             print(node)
-            
-    

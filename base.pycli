@@ -11,7 +11,8 @@
         "name": "debug",
         "help": "Enable debugs",
         "link": [''],
-        "type": "pycli_internal"
+        "type": "pycli_internal",
+        "nois": True
     },
     
     {   
@@ -19,7 +20,26 @@
         "help": "Negate a command",
         "link": [''],
         "type": "pycli_internal",
-        "capture": ['debug']
+    },
+    {   
+        "name": "xcheck",
+        "help": "Negate a command",
+        "link": [''],
+        "type": "pycli_internal",
+    },
+    {
+        "name": "shut",
+        "help": "Exit PyCli",
+        "link": [''],
+        "type": "pycli_internal",
+        "execute": "pycli_exit"
+    },
+    {
+        "name": "tree",
+        "help": "Contextual PyCli Tree",
+        "link": ['show'],
+        "type": "pycli_internal",
+        "execute": "pycli_show_tree"
     },
     
     {
@@ -29,6 +49,15 @@
         "type": "pycli_internal",
         "execute": "pycli_show_history"
     },
+    
+    {
+        "name": "detail",
+        "help": "Show details",
+        "link": ['show', 'history'],
+        "type": "pycli_internal",
+        "execute": "pycli_show_history"
+    },
+    
     {   
         "name": "keystrokes",
         "help": "Debug keystrokes",

@@ -1,8 +1,9 @@
+from datetime import datetime
+
 from PyCli.api.exceptions import *
 from PyCli.api.getchar import GetChar
-
-class PyCliTree(object):
-    pass
+from PyCli.api.tree import PyCliTree
+from PyCli.api.icmds import PyCliInternalCmds
 
 class PyCliShell(object):
     __cli_tree = None
@@ -10,8 +11,7 @@ class PyCliShell(object):
     __prompt_terminator = "#"
     __mode = ""
     __cli_history = []
-    __debug = False
-
+    DEBUG = False
 
     _up_count = 0
     
@@ -36,7 +36,7 @@ class PyCliShell(object):
             self.__cli_tree = cli_tree
         else:
             raise PyCliTypeError("cli_tree", PyCliTree)
-
+            
     @property
     def prompt(self):
         return self.__prompt
@@ -86,7 +86,46 @@ class PyCliShell(object):
             retstr += "(%s)" % self.mode
         retstr += self.prompt_terminator
         return retstr
-
+    
+    def handle_help(self, cli):
+        tokens = list(filter(None, cli.split(" ")))
+        nois = False
+        
+        if len(tokens) > 0 and tokens[0] == "no":
+            nois = True
+            tokens = tokens[1:]
+        try:
+            for hp in self.cli_tree.find_all_help(tokens, nois):
+                self.print_realtime("\n %-20s %s" %(hp["name"], hp["help"]))
+        except Exception as e:
+            #raise e
+            self.print_realtime("\nInvalid CLI: %s"%cli)
+        self.print_realtime("\n")
+    
+    def handle_internal_cr(self, ex, nois=False):
+        return getattr(PyCliInternalCmds, ex)(self, nois=nois)
+        
+    def handle_cr(self, cli):
+        tokens = list(filter(None, cli.split(" ")))
+        nois = False
+        if len(tokens) > 0 and tokens[0] == "no":
+            nois = True
+            tokens = tokens[1:]
+        try:
+            ex = self.cli_tree.find_executable(tokens, nois)
+            if ex is None:
+                self.print_realtime("\nInvalid CLI: %s"%cli)
+                
+            if ex[1] is "pycli_internal":
+                self.handle_internal_cr(ex[0], ex[2])
+            else:
+                self.handle_external_cr(ex[0], ex[2])
+            
+        except Exception as e:
+            #raise e
+            self.print_realtime("\nCLI Not Implemented: %s"%(cli))
+        self.print_realtime("\n")
+        
     def attach(self):
         curr_cli = ""
         term = GetChar()
@@ -96,22 +135,17 @@ class PyCliShell(object):
                 uchar = term.stdin()
                 if uchar is '?':
                     PyCliShell.print_realtime(uchar)
+                    self.handle_help(curr_cli)
                     break
                 if uchar is '\n' or uchar is '\r':
-                    if curr_cli.strip() is not "":
-                        self.cli_history.insert(0, curr_cli.strip())
-                    if curr_cli == "history":
-                        print("")
-                        print(self.cli_history)
-                    if curr_cli == "debug keystrokes":
-                        print("")
-                        self.__debug = True
-                    if curr_cli == "undebug keystrokes":
-                        print("")
-                        self.__debug = False
-
-                    PyCliShell.print_realtime("")
+                    ccli = curr_cli.strip()
                     curr_cli = ""
+                    if ccli is not "":
+                        now = datetime.now()
+                        self.print_realtime("\n-- %s -- \n" % now)
+                        self.cli_history.insert(0, (str(now), ccli))
+                        self.handle_cr(ccli)
+                    PyCliShell.print_realtime("")
                     break 
                 if uchar is '\t':
                     PyCliShell.print_realtime("TAB\n")
@@ -128,22 +162,29 @@ class PyCliShell(object):
                     uchar = term.stdin()
                     if uchar is 'A':
                         if self._up_count < len(self.cli_history):
-                            curr_cli = self.cli_history[self._up_count]
+                            curr_cli = self.cli_history[self._up_count][1]
                             self._up_count += 1
                     break
                 if uchar is '\x03':
                     PyCliShell.print_realtime("\n")
-                    exit(0)
+                    curr_cli = ""
+                    break;
                 curr_cli += uchar
-                if self.__debug:
-                    PyCliShell.print_realtime(ord(uchar))
+                if self.DEBUG:  
+                    PyCliShell.print_realtime("'%d',"%ord(uchar))
                 else:
                     PyCliShell.print_realtime(uchar)
                 self._up_count = 0
 
 
 def pyclishell_ut():
-    shell = PyCliShell(PyCliTree())
+    from PyCli.api.parser import PyCliParser
+    from PyCli.api.node import PyCliNodeBuilder
+    pcp = PyCliParser(".")
+    nodes = pcp.parse(pcp.find())
+    tree = PyCliTree()
+    tree.attach(nodes)
+    shell = PyCliShell(tree)
     shell.attach()
 
 
