@@ -1,9 +1,21 @@
+""" Module to get user input from terminal char by char """
+
+__author__ = "Lovel Rishi"
+__copyright__ = "Copyright (c) 2019, Lovel Rishi"
+__license__ = "GPL-3.0"
+__version__ = "1.0.0"
+__maintainer__ = "Lovel Rishi"
+__email__ = "lovelrishi@outlook.com"
+__status__ = "Development"
+
+
 from PyCli.api.abstract import AbstractOS
 from PyCli.api.decorators import virtualmethod
 from PyCli.api.exceptions import PyCliUnsupportedOS
 from PyCli.api.log import Log
 
-class GetChar(object):
+
+class GetChar():
     """Gets a single character from standard input.  Does not echo to the
 screen."""
 
@@ -29,20 +41,16 @@ screen."""
 
     @virtualmethod
     def stdin(self, count=1):
-        pass
+        """ Get <count> chars from stdin """
 
-
-def getchar_utest():
-    gc = GetChar()
-    print("Type q to exit, or anything else for no-op:")
-    while True:
-        c = gc.stdin()
-        print(c)
-        if c is 'q':
-            print("\nExiting!")
-            break
-
-
-if __name__ == "__main__":
-    Log.i("Starting up...")
-    getchar_utest()
+    @staticmethod
+    def quick_ut():
+        """ Quickly instantiate and test GetChar """
+        mgc = GetChar()
+        print("Type q to exit, or anything else for no-op:")
+        while True:
+            char = mgc.stdin()
+            print(char)
+            if char == 'q':
+                print("\nExiting!")
+                break

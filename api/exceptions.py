@@ -1,36 +1,30 @@
-"""
-"" Copyright (c) 2019 - Lovel Rishi (lrishi)
-"" 
-"" File:            exceptions.py
-"" Description:     PyCli specific custom exception definitions.
-""
-"" Author:          Lovel Rishi (lrishi)
-"" Date Created:    14 Jul 2019
-"" 
-"""
+""" PyCli specific exceptions """
+
+__author__ = "Lovel Rishi"
+__copyright__ = "Copyright (c) 2019, Lovel Rishi"
+__license__ = "GPL-3.0"
+__version__ = "1.0.0"
+__maintainer__ = "Lovel Rishi"
+__email__ = "lovelrishi@outlook.com"
+__status__ = "Development"
 
 
-"""
-"" edt:     PyCliInvalidArgument
-"" desc:    Invalid arguments passed to a method
-""
-"""
 class PyCliInvalidArgument(Exception):
+    """ Invalid argument exception """
+
     def __init__(self, arg, arg_t):
-        super().__init__(
+        super(PyCliInvalidArgument, self).__init__(
             "%s must be of type %s" % (
                 str(arg), str(arg_t)
             )
         )
 
-"""
-"" edt:     PyCliInvalidArgument
-"" desc:    Invalid arguments passed to a method
-""
-"""
+
 class PyCliTypeError(Exception):
+    """ Expected variable type mismatch """
+
     def __init__(self, arg, arg_t):
-        super().__init__(
+        super(PyCliTypeError, self).__init__(
             "%s should be of type %s" % (
                 str(arg), str(arg_t)
             )
@@ -38,13 +32,17 @@ class PyCliTypeError(Exception):
 
 
 class PyCliValueError(Exception):
+    """ Invalid value in a variable """
+
     def __init__(self, arg):
-        super().__init__(str(arg))
-        
+        super(PyCliValueError, self).__init__(str(arg))
+
 
 class PyCliUnsupportedOS(Exception):
+    """ Unsupported operating system for PyCli """
+
     def __init__(self, arg):
-        super().__init__(
+        super(PyCliUnsupportedOS, self).__init__(
             "Unsupported operating system => [%s]" % (
                 str(arg)
             )

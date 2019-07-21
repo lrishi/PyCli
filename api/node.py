@@ -1,52 +1,58 @@
-from PyCli.api.exceptions import PyCliValueError
+""" PyCli CLI nodes """
+
+__author__ = "Lovel Rishi"
+__copyright__ = "Copyright (c) 2019, Lovel Rishi"
+__license__ = "GPL-3.0"
+__version__ = "1.0.0"
+__maintainer__ = "Lovel Rishi"
+__email__ = "lovelrishi@outlook.com"
+__status__ = "Development"
 
 
-class PyCliNode(object):
-    
+from PyCli.api.decorators import virtualmethod
+
+
+class PyCliNode():
+    """ PyCli Node class that is passed to PyCliTree """
     data_name = None
     data_help = None
     data_link = None
     data_type = None
-    
+
     data_nois = False
     data_execute = None
-    
+
     def __str__(self):
-        return  ("Name: %s, Linkpoint: %s, Type: %s, No: %s [%s]" %
-                    (
-                        self.data_name,
-                        self.data_link,
-                        self.data_type,
-                        self.data_nois,
-                        super().__str__()
-                    )   
-                )
-        
-    def __init__(self, name, help, link, type=None, nois=False, execute=None):
+        return  "Name: %s, Linkpoint: %s, Type: %s, No: %s [%s]" % (
+            self.data_name,
+            self.data_link,
+            self.data_type,
+            self.data_nois,
+            super(PyCliNode, self).__str__()
+        )
+
+    def __init__(self, name, _help, link, _type=None, nois=False, execute=None):
         self.data_name = name
-        self.data_help = help
+        self.data_help = _help
         self.data_link = link
-        self.data_type = type
-        
+        self.data_type = _type
         self.data_nois = nois
         self.data_execute = execute
-        
-    def attach(self, node):
-        if type(node) is not PyCliNode:
-            raise PyCliTypeError("node", PyCliNode)
-        
-        if key in self._children:
-            raise PyCliValueError("%s CLI key is duplicated, exists at %s" % (key, self._children[key]))
-        
-        self._children[key] = node
+
+    @virtualmethod
+    def attach(self):
+        """ Not supported """
+
+    @virtualmethod
+    def detach(self):
+        """ Not supported """
 
 
-
-class PyCliNodeBuilder(object):
-    
+class PyCliNodeBuilder():
+    """ Node Builder """
     mandatory = {}
     optional = {}
-    
+
     def __init__(self):
         self.mandatory = {
             "name": None,
@@ -58,26 +64,29 @@ class PyCliNodeBuilder(object):
             "nois": False,
             "execute": None
         }
-        
-    def _get(self):
-        return PyCliNode(  
-                    link=self.mandatory["link"],
-                    name=self.mandatory["name"],
-                    help=self.mandatory["help"],
-                    type=self.optional["type"],
-                    nois=self.optional["nois"],
-                    execute=self.optional["execute"]
-                )
-    
+
+    def get_node(self):
+        """ Create node """
+        return PyCliNode(
+            link=self.mandatory["link"],
+            name=self.mandatory["name"],
+            _help=self.mandatory["help"],
+            _type=self.optional["type"],
+            nois=self.optional["nois"],
+            execute=self.optional["execute"]
+        )
+
     @staticmethod
     def get(dictionary):
-        # Parse mandatory args
+        """ Parse mandatory and optional args and get node """
         pcnb = PyCliNodeBuilder()
-        for key in pcnb.mandatory.keys():
+        for key, value in pcnb.mandatory.items():
             pcnb.mandatory[key] = dictionary[key]
-        
-        for key in pcnb.optional.keys():
+
+        for key, value in pcnb.optional.items():
             if key in dictionary:
                 pcnb.optional[key] = dictionary[key]
-        
-        return pcnb._get()        
+            else:
+                pcnb.optional[key] = value
+
+        return pcnb.get_node()

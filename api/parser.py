@@ -1,41 +1,58 @@
+""" CLI Configuration file parser implementation """
+
+__author__ = "Lovel Rishi"
+__copyright__ = "Copyright (c) 2019, Lovel Rishi"
+__license__ = "GPL-3.0"
+__version__ = "1.0.0"
+__maintainer__ = "Lovel Rishi"
+__email__ = "lovelrishi@outlook.com"
+__status__ = "Development"
+
+
 import os
-
+from ast import literal_eval
 from PyCli.api.node import PyCliNodeBuilder
-        
 
-class PyCliParser(object):
-    
+
+class PyCliParser():
+    """ PyCli configuration file parser class """
+
     __extensions = (".pycli")
     __search_path = "."
     __nodes = []
     __tree = []
-    
+
     def __init__(self, search_path):
         self.__search_path = search_path
-    
+
     def _parse(self, fname):
-        with open(fname) as f:
-            out = f.read()
-            bp = eval(out)
-            self.__tree.append(bp)
-        
+        """ Parse single file """
+        with open(fname) as fdesc:
+            out = fdesc.read()
+            obp = literal_eval(out)
+            self.__tree.append(obp)
+
     def parse(self, files):
-        for fn in files:
-            self._parse(fn)
-        for t in self.__tree:
-            self.__nodes += list(map(PyCliNodeBuilder.get, t))
+        """ Parse multiple files """
+        for fname in files:
+            self._parse(fname)
+        for tnode in self.__tree:
+            self.__nodes += list(map(PyCliNodeBuilder.get, tnode))
         return self.__nodes
-        
+
     def find(self):
-        file_names = [fn for fn in os.listdir(self.__search_path) if fn.endswith(self.__extensions)]
-        return (file_names)
+        """ Find all .pycli files in a given directory """
+        file_names = [fname for fname in os.listdir(self.__search_path) if
+                      fname.endswith(self.__extensions)]
+        return file_names
 
-
-if __name__ == "__main__":
-    pcp = PyCliParser(".")
-    dtree = pcp.parse(pcp.find())
-    print(dtree)
-    for d in dtree:
-        for m in d:
-            node = PyCliNodeBuilder.get(m)
-            print(node)
+    @staticmethod
+    def quick_ut():
+        """ Quickly test PyCliParser """
+        pcp = PyCliParser(".")
+        pdict = pcp.parse(pcp.find())
+        print(pdict)
+        for mpd in pdict:
+            for mpm in mpd:
+                node = PyCliNodeBuilder.get(mpm)
+                print(node)
