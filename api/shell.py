@@ -9,15 +9,13 @@ __email__ = "lovelrishi@outlook.com"
 __status__ = "Development"
 
 #pylint: disable=broad-except,missing-docstring,too-many-instance-attributes,too-many-branches
-
+from os import system
 from datetime import datetime
 from PyCli.api.exceptions import PyCliValueError, PyCliTypeError
 from PyCli.api.getchar import GetChar
 from PyCli.api.tree import PyCliTree
 from PyCli.api.icmds import PyCliInternalCmds
 
-def blahBluh():
-    pass
 
 class PyCliShell():
     """ PyCli Shell entrypoint """
@@ -100,18 +98,27 @@ class PyCliShell():
         retstr += self.prompt_terminator
         return retstr
 
+    def tab_complete(self, cli):
+        """ Tab completion of CLI commands """
+        tokens = list(filter(None, cli.split(" ")))
+        return self.cli_tree.auto_complete(tokens)
+
     def handle_help(self, cli):
         tokens = list(filter(None, cli.split(" ")))
         nois = False
+        regex = False
 
         if tokens and tokens[0] == "no":
             nois = True
             tokens = tokens[1:]
         try:
-            for hlp in self.cli_tree.find_all_help(tokens, nois):
+            if cli != "" and cli[-1] != " ":
+                regex = True
+
+            for hlp in self.cli_tree.find_all_help(tokens, nois, regex):
                 self.print_realtime("\n %-20s %s" %(hlp["name"], hlp["help"]))
         except Exception as exp:
-            #raise exp
+            # raise exp
             self.print_realtime("\nInvalid CLI: %s =>\n%s" % (cli, exp))
         self.print_realtime("\n")
 
@@ -119,7 +126,7 @@ class PyCliShell():
         return getattr(PyCliInternalCmds, ex)(self, nois=nois)
 
     def handle_external_cr(self, ex, nois=False):
-        raise NotImplementedError
+        system(ex)
 
     def handle_cr(self, cli):
         tokens = list(filter(None, cli.split(" ")))
@@ -149,6 +156,10 @@ class PyCliShell():
             PyCliShell.print_realtime("\n%s" % (self.get_prompt_string()), curr_cli)
             while True:
                 uchar = term.stdin()
+                if uchar == ' ':
+                    PyCliShell.print_realtime(uchar)
+                    curr_cli = self.tab_complete(curr_cli)
+                    break
                 if uchar == '?':
                     PyCliShell.print_realtime(uchar)
                     self.handle_help(curr_cli)
@@ -159,13 +170,13 @@ class PyCliShell():
                     if ccli != "":
                         now = datetime.now()
                         self.print_realtime("\n-- %s -- \n" % now)
+                        ccli = self.tab_complete(ccli)
                         self.cli_history.insert(0, (str(now), ccli))
                         self.handle_cr(ccli)
                     PyCliShell.print_realtime("")
                     break
                 if uchar == '\t':
-                    PyCliShell.print_realtime("TAB\n")
-                    curr_cli = ""
+                    curr_cli = self.tab_complete(curr_cli)
                     break
                 if uchar == '\x7f':
                     if curr_cli == "":

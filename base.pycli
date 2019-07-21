@@ -1,4 +1,3 @@
-
 [
     {   
         "name": "show",
@@ -6,7 +5,6 @@
         "link": [''],
         "type": "pycli_internal"
     },
-    
     {   
         "name": "debug",
         "help": "Enable debugs",
@@ -14,15 +12,8 @@
         "type": "pycli_internal",
         "nois": True
     },
-    
     {   
         "name": "no",
-        "help": "Negate a command",
-        "link": [''],
-        "type": "pycli_internal",
-    },
-    {   
-        "name": "xcheck",
         "help": "Negate a command",
         "link": [''],
         "type": "pycli_internal",
@@ -41,15 +32,27 @@
         "type": "pycli_internal",
         "execute": "pycli_show_tree"
     },
-    
+    {
+        "name": "version",
+        "help": "Show operating system related version information",
+        "link": ['show'],
+        "type": "external",
+        "execute": "/bin/uname -r"
+    },
+    {
+        "name": "detail",
+        "help": "Show information in detail",
+        "link": ['show', 'version'],
+        "type": "external",
+        "execute": "/bin/uname -a"
+    },
     {
         "name": "history",
         "help": "List history of executed commands",
         "link": ['show'],
         "type": "pycli_internal",
         "execute": "pycli_show_history"
-    },
-    
+    },  
     {
         "name": "detail",
         "help": "Show details",
@@ -57,7 +60,6 @@
         "type": "pycli_internal",
         "execute": "pycli_show_history"
     },
-    
     {   
         "name": "keystrokes",
         "help": "Debug keystrokes",
