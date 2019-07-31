@@ -1,0 +1,41 @@
+[
+    {   
+        "name": "|",
+        "help": "Chain a filter",
+        "link": [''],
+        "multilink": ['post-cmd'],
+        "type": "pycli_internal"
+    },
+    {
+        "name": "begin",
+        "help": "Begin pattern",
+        "link": ["|"],
+        "arg": [""],
+        "execute": "pycli_filter_begin",
+        "type": "pycli_internal"
+    },
+    {
+        "name": "exclude",
+        "help": "Exclude pattern",
+        "link": ["|"],
+        "arg": [""],
+        "execute": "pycli_filter_exclude",
+        "type": "pycli_internal"
+    },
+    {
+        "name": "include",
+        "help": "Include pattern",
+        "link": ["|"],
+        "arg": [""],
+        "execute": "pycli_filter_include",
+        "type": "pycli_internal"
+    },
+    {
+        "name": "regexp",
+        "help": "Regular expression pattern pattern",
+        "link": ["|"],
+        "arg": [""],
+        "execute": "pycli_filter_regexp",
+        "type": "pycli_internal"
+    },
+]

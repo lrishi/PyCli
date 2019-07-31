@@ -165,11 +165,12 @@ class PyCliShell():
                     self.handle_help(curr_cli)
                     break
                 if uchar in ('\n', '\r'):
+                    self._up_count = 0
                     ccli = curr_cli.strip()
                     curr_cli = ""
                     if ccli != "":
                         now = datetime.now()
-                        self.print_realtime("\n-- %s -- \n" % now)
+                        self.print_realtime("\n%s\n\n" % now)
                         ccli = self.tab_complete(ccli)
                         self.cli_history.insert(0, (str(now), ccli))
                         self.handle_cr(ccli)
@@ -189,8 +190,18 @@ class PyCliShell():
                     uchar = term.stdin()
                     if uchar == 'A':
                         if self._up_count < len(self.cli_history):
+                            PyCliShell.print_realtime("\b \b" * (len(curr_cli)))
                             curr_cli = self.cli_history[self._up_count][1]
                             self._up_count += 1
+                            PyCliShell.print_realtime(curr_cli)
+                        continue
+                    if uchar == 'B':
+                        if self._up_count > 0:
+                            PyCliShell.print_realtime("\b \b" * (len(curr_cli)))
+                            curr_cli = self.cli_history[self._up_count - 1][1]
+                            self._up_count -= 1
+                            PyCliShell.print_realtime(curr_cli)
+                        continue
                     break
                 if uchar == '\x03':
                     PyCliShell.print_realtime("\n")

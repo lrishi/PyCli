@@ -114,7 +114,7 @@ class PyCliTree():
                     continue
             retlist.append({"name": lpt, "help": cpt[lpt]["this"].data_help})
         if cptt and cptt.data_execute is not None:
-            retlist.append({"name": "<cr>", "help": "Press enter to execute CLI"})
+            retlist.append({"name": "<cr>", "help": "Press return to execute command"})
         return retlist
 
     def _attach_node(self, node):
